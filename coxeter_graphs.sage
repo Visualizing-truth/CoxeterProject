@@ -34,8 +34,10 @@ def create_cartan_matrix(G):
                 cartan_matrix[i, j] = 2
             elif adjacency_matrix[i, j] != 0:
                 cartan_matrix[i, j] = -adjacency_matrix[i, j]
-            else:
-                cartan_matrix[i, j] = 0
+            # else:
+            #     cartan_matrix[i, j] = 0
+    
+    print(cartan_matrix)
     
     return cartan_matrix
 
@@ -47,6 +49,8 @@ def node_with_max_weighted_degree(G):
 def check_level(G, current_level):
     
     A = create_cartan_matrix(G)
+
+    print(A.determinant())
 
     if A.determinant() == 0:
         print("The graph is a level 0 Coxeter graph and is affine")
@@ -72,10 +76,10 @@ def main():
     current_level = 0
     # Example usage
     G = Graph(Matrix([
-        [0, 4, 0, 0],
-        [4, 0, 1, 0],
-        [0, 1, 0, 4],
-        [0, 0, 4, 0]
+        [0, 4, 2, 2],
+        [4, 0, 3, 2],
+        [2, 3, 0, 4],
+        [2, 2, 4, 0]
     ]))
 
     current_level = check_level(G, current_level)
