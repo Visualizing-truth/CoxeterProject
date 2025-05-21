@@ -1,95 +1,120 @@
-def is_finite_lvl0(G):
+
+def is_lvl0(A):
     """
-    Check if the graph G is a level 0 Coxeter graph.
-    """
-    # Check if the graph is connected
-    if not G.is_connected():
-        return False
+    Input:  square matrix (symmetric matrix with diagnol values 1)
+    Output: bool
+
+    Takes in a square matrix representing a coxeter graph returns whether the level of graph is 0 or not.
+
+    Test Cases:
     
-    for name, graph in globals().items():
-        if isinstance(graph, Graph):
-            if G.is_isomorphic(graph):
-                print(f"The graph is isomorphic to {name}")
-                return True
-    return False
+    G1 = CoxeterType(['A', 4])
+    A1 = G1.coxeter_matrix()
+    is_lvl0(A1) --> True
+
+    G2 = CoxeterType(['A', 4, 1])
+    A2 = G2.coxeter_matrix()
+    is_lvl0(A2) --> True
+
+    """
+    CG = CoxeterGroup(A)
+    if CG.is_finite():
+        return True
+    A = CG.coxeter_matrix()
+    B = A.bilinear_form()
+    # For numeric answers
+    B_cc = B.change_ring(CC)
+    eigenvalues = B_cc.eigenvalues()
+    
+    is_affine = any(g==0 for g in eigenvalues) and all(g>=0 for g in eigenvalues)
+    return is_affine
 
 
-def create_cartan_matrix(G):
-    """
-    Create a Cartan Matrix (n x n) from a graph G.
-    """
-    # Get the number of vertices
-    n = G.num_verts()
 
-    #Get the adjacency matrix
-    adjacency_matrix = G.adjacency_matrix()
-    
-    # Initialize the Cartan matrix
-    cartan_matrix = Matrix(ZZ, n, n)
-    
-    # Fill the Cartan matrix based on the edges of the graph
-    for i in range(n):
-        for j in range(n):
-            if i == j:
-                cartan_matrix[i, j] = 2
-            elif adjacency_matrix[i, j] != 0:
-                cartan_matrix[i, j] = -adjacency_matrix[i, j]
-            # else:
-            #     cartan_matrix[i, j] = 0
-    
-    print(cartan_matrix)
-    
-    return cartan_matrix
 
+def countHeavyEdges(A):
+    """
+    Not used in current implementation
+    """
+    count = 0
+    n = A.nrows
+    for i in range(0, n-1):
+        for j in range(i+1, n):
+            if A[i][j] >=4:
+                count += 1
+
+    return count
+
+def delete_nodes(G, a):
+    """
+    Input: square matrix (symmetric matrix with diagnol values 1), int
+    output: list
+
+    Takes a matrix and a>0 as input and returns a list of matrices (representing coxeter graphs) obtained after removing all possible combination of a nodes.
+    """
+    C = Combinations(range(n), a)
+    n = G.nrows
+    ls = []
+    print(C.list())
+
+    for comb in C.list():
+        actual = list(range(n))
+
+        for i in comb:
+            actual.remove(i)
+
+        ls.append(G[ actual, actual])
+    print(len(ls))
+    return ls
+    
+
+def check_level(G):
+    """
+    input: G:square matrix (symmetric matrix with diagnol values 1)
+    output: int
+
+    Takes as input a matrix representing a coxeter graph and returns the levl of that coxeter graph.
+
+    """
+    n = G.nrows
+    curLvl = 0
+    if is_lvl0(G):
+        return curLvl
+    else:
+        while True:
+            curLvl += 1
+            # Now we remove curLvl nodes
+            subgraphs = delete_nodes(G, curLvl, n)
+            if all(is_lvl0(graph) for graph in subgraphs):
+                return curLvl
+                
 def node_with_max_weighted_degree(G):
     weighted_degrees = G.degree(weighted=True)
     max_node = max(weighted_degrees, key=lambda x: x[1])[0]
     return max_node
 
-def check_level(G, current_level):
-    
-    A = create_cartan_matrix(G)
-
-    print(A.determinant())
-
-    if A.determinant() == 0:
-        print("The graph is a level 0 Coxeter graph and is affine")
-        return current_level
-    elif A.determinant() > 0:
-        print("The graph is a level 0 Coxeter graph and is finite")
-        return current_level
-    elif A.determinant() < 0:
-        print("The graph is not a level 0 Coxeter graph")
-        current_level += 1
-
-    G1 = G.copy()
-    G1.delete_vertex(node_with_max_weighted_degree(G))
-
-    subgraphs = G1.connected_components_subgraphs()
-    for subgraph in subgraphs:
-        check_level(subgraph, current_level)
-
-    return current_level
-
 def main():
 
-    current_level = 0
-    # Example usage
-    G = Graph(Matrix([
-        [0, 4, 2, 2],
-        [4, 0, 3, 2],
-        [2, 3, 0, 4],
-        [2, 2, 4, 0]
-    ]))
+    G1 = CoxeterType(['A', 4])
+    A1 = G1.coxeter_matrix()
 
-    current_level = check_level(G, current_level)
+    G2 = CoxeterType(['A', 4, 1])
+    A2 = G2.coxeter_matrix()
 
-    print("Current level:", current_level)
+    M = matrix(ZZ, [
+    [1, 6, 2, 2],
+    [6, 1, 3, 2],
+    [2, 3, 1, 4],
+    [2, 2, 4, 1],
+])
+
+    K = matrix(ZZ, [
+    [1, 6, 2],
+    [6, 1, 3],
+    [2, 3, 1],
+   
+])
+    print(check_level(K))
 
 
 main()
-
-    
-
-
-
