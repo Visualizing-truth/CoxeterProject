@@ -1,35 +1,7 @@
 
-def is_lvl0(A):
-    """
-    Input:  square matrix (symmetric matrix with diagnol values 1)
-    Output: bool
 
-    Takes in a square matrix representing a coxeter graph returns whether the level of graph is 0 or not.
-
-    Test Cases:
-    
-    G1 = CoxeterType(['A', 4])
-    A1 = G1.coxeter_matrix()
-    is_lvl0(A1) --> True
-
-    G2 = CoxeterType(['A', 4, 1])
-    A2 = G2.coxeter_matrix()
-    is_lvl0(A2) --> True
-
-    """
-    CG = CoxeterGroup(A)
-    if CG.is_finite():
-        return True
-    A = CG.coxeter_matrix()
-    B = A.bilinear_form()
-    # For numeric answers
-    B_cc = B.change_ring(CC)
-    eigenvalues = B_cc.eigenvalues()
-    
-    is_affine = any(g==0 for g in eigenvalues) and all(g>=0 for g in eigenvalues)
-    return is_affine
-
-
+def is_level_0(CM):
+    return CM.is_finite() and CM.is_affine()
 
 
 def countHeavyEdges(A):
@@ -78,14 +50,14 @@ def check_level(G):
     """
     n = G.nrows
     curLvl = 0
-    if is_lvl0(G):
+    if is_level_0(G):
         return curLvl
     else:
         while True:
             curLvl += 1
             # Now we remove curLvl nodes
             subgraphs = delete_nodes(G, curLvl, n)
-            if all(is_lvl0(graph) for graph in subgraphs):
+            if all(is_level_0(graph) for graph in subgraphs):
                 return curLvl
 
 def main():
