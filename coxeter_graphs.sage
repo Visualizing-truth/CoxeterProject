@@ -87,11 +87,6 @@ def check_level(G):
             subgraphs = delete_nodes(G, curLvl, n)
             if all(is_lvl0(graph) for graph in subgraphs):
                 return curLvl
-                
-def node_with_max_weighted_degree(G):
-    weighted_degrees = G.degree(weighted=True)
-    max_node = max(weighted_degrees, key=lambda x: x[1])[0]
-    return max_node
 
 def main():
 
