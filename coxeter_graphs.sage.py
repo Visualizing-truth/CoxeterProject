@@ -57,12 +57,12 @@ def get_level(CM):
 
     Takes as input a Coxeter matrix and returns the level of the coxeter graph represented by that matrix.
     """
-    n = Matrix(CM).nrows()
+    n = len(CM.index_set())
     if is_level_0(CM):
         return _sage_const_0 
     else:
         current_CM = CM
-        for i in range(_sage_const_1 , n):
+        for i in range(_sage_const_1 , n-_sage_const_1 ):
             current_CM = delete_node_with_max_weighted_degree(current_CM)
             if is_level_0(current_CM):
                 return i
@@ -78,9 +78,8 @@ def check_level(CM):
 
     """
     n = len(CM.index_set())
-    curLvl = _sage_const_0 
     if is_level_0(CM):
-        return curLvl
+        return _sage_const_0 
     else:
         for i in range(_sage_const_1 , n-_sage_const_1 ):
             list = delete_nodes(CM, i)
@@ -127,15 +126,16 @@ def main():
 ])
     print("__________________________________")
     start = time.time()
-    level1 = check_level(K)
+    level1 = check_level(M3)
     delta1 = time.time() - start
     print("Level of the graph with check_level : ", level1, " Time taken: ", delta1)
     start = time.time()
-    level2 = get_level(K)
+    level2 = get_level(M3)
     delta2 = time.time() - start
     print("Level of the graph with get level : ", level2, " Time taken: ", delta2)
     print("The fastest method is: ", "check_level" if delta1 < delta2 else "get_level")
     print("__________________________________")
+
 
 main()
 

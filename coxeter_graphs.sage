@@ -30,7 +30,7 @@ def delete_nodes(CM, a):
     return ls
 
 def delete_node_with_max_weighted_degree(CM):
-    n = Matrix(CM).nrows()
+    n = len(CM.index_set())
     M = Matrix(CM)
     max_row_sum = -1
     node_to_remove = -1
@@ -51,12 +51,12 @@ def get_level(CM):
 
     Takes as input a Coxeter matrix and returns the level of the coxeter graph represented by that matrix.
     """
-    n = Matrix(CM).nrows()
+    n = len(CM.index_set())
     if is_level_0(CM):
         return 0
     else:
         current_CM = CM
-        for i in range(1, n):
+        for i in range(1, n-1):
             current_CM = delete_node_with_max_weighted_degree(current_CM)
             if is_level_0(current_CM):
                 return i
@@ -72,9 +72,8 @@ def check_level(CM):
 
     """
     n = len(CM.index_set())
-    curLvl = 0
     if is_level_0(CM):
-        return curLvl
+        return 0
     else:
         for i in range(1, n-1):
             list = delete_nodes(CM, i)
@@ -121,14 +120,15 @@ def main():
 ])
     print("__________________________________")
     start = time.time()
-    level1 = check_level(K)
+    level1 = check_level(M3)
     delta1 = time.time() - start
     print("Level of the graph with check_level : ", level1, " Time taken: ", delta1)
     start = time.time()
-    level2 = get_level(K)
+    level2 = get_level(M3)
     delta2 = time.time() - start
     print("Level of the graph with get level : ", level2, " Time taken: ", delta2)
     print("The fastest method is: ", "check_level" if delta1 < delta2 else "get_level")
     print("__________________________________")
+
 
 main()
