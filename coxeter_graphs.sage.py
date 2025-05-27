@@ -26,17 +26,17 @@ def delete_nodes(CM, a):
 
     Takes a matrix and a>0 as input and returns a list of matrices (representing coxeter graphs) obtained after removing all possible combination of a nodes.
     """
+    
     n = Matrix(CM).nrows()
     C = Combinations(range(n), a)
-    ls = []
-    for comb in C.list():
-        actual = [i for i in range(n) if i not in comb]
+
+    for comb in C:
+        actual = [i for i in range(n) if i not in comb] # look at filter
         submat = Matrix(CM)[actual, actual]
-        ls.append(CoxeterMatrix(submat))
-    return ls
+        yield CoxeterMatrix(submat)
 
 def delete_node_with_max_weighted_degree(CM):
-    n = Matrix(CM).nrows()
+    n = len(CM.index_set())
     M = Matrix(CM)
     max_row_sum = -_sage_const_1 
     node_to_remove = -_sage_const_1 
@@ -76,14 +76,17 @@ def check_level(CM):
 
     Takes as input a matrix representing a coxeter graph and returns the levl of that coxeter graph.
 
+    Explain in which case we go in the loop
+
+    
     """
     n = len(CM.index_set())
     if is_level_0(CM):
         return _sage_const_0 
     else:
-        for i in range(_sage_const_1 , n-_sage_const_1 ):
-            list = delete_nodes(CM, i)
-            if all(is_level_0(coxeter_matrix) for coxeter_matrix in list):
+        for i in range(_sage_const_1 , n):
+            subgraphs = delete_nodes(CM, i)
+            if all(is_level_0(coxeter_matrix) for coxeter_matrix in subgraphs):
                 return i
 
 def main():
@@ -124,17 +127,24 @@ def main():
     [_sage_const_3 , _sage_const_3 , _sage_const_3 , _sage_const_3 , _sage_const_1 , _sage_const_3 ],
     [_sage_const_3 , _sage_const_3 , _sage_const_3 , _sage_const_3 , _sage_const_3 , _sage_const_1 ]
 ])
+    InfiniteGraph = CoxeterMatrix([
+        [_sage_const_1 , -_sage_const_2 , _sage_const_2 , _sage_const_2 , _sage_const_2 ],
+        [-_sage_const_2 , _sage_const_1 , _sage_const_3 , _sage_const_2 , _sage_const_2 ],
+        [_sage_const_2  , _sage_const_3 , _sage_const_1  ,_sage_const_3  ,_sage_const_2 ],
+        [_sage_const_2 , _sage_const_2 , _sage_const_3 , _sage_const_1  , -_sage_const_2 ],
+        [_sage_const_2 , _sage_const_2 , _sage_const_2 , -_sage_const_2 , _sage_const_1 ]
+    ])
     print("__________________________________")
     start = time.time()
-    level1 = check_level(M3)
+    level1 = check_level(InfiniteGraph)
     delta1 = time.time() - start
     print("Level of the graph with check_level : ", level1, " Time taken: ", delta1)
-    start = time.time()
-    level2 = get_level(M3)
-    delta2 = time.time() - start
-    print("Level of the graph with get level : ", level2, " Time taken: ", delta2)
-    print("The fastest method is: ", "check_level" if delta1 < delta2 else "get_level")
-    print("__________________________________")
+    # start = time.time()
+    # level2 = get_level(InfiniteGraph)
+    # delta2 = time.time() - start
+    # print("Level of the graph with get level : ", level2, " Time taken: ", delta2)
+    # print("The fastest method is: ", "check_level" if delta1 < delta2 else "get_level")
+    # print("__________________________________")
 
 
 main()
