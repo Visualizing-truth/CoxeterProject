@@ -1,4 +1,5 @@
 import time
+import os
 
 
 def is_repr_affine(CM):
@@ -16,7 +17,7 @@ def is_level_0(CM):
 
     Check if the bilinear form has no negative eigenvalues 
     """
-    return CM.is_finite() or CM.is_affine() or is_repr_affine(CM)
+    return CM.is_finite() or CM.is_affine() #or is_repr_affine(CM)
 
 
 
@@ -120,14 +121,14 @@ def main():
         [4, 2, 2, 4, 1]
     ])
 
-    M3 = CoxeterMatrix([
-    [1, 3, 3, 3, 3, 3],
-    [3, 1, 3, 3, 3, 3],
-    [3, 3, 1, 3, 3, 3],
-    [3, 3, 3, 1, 3, 3],
-    [3, 3, 3, 3, 1, 3],
-    [3, 3, 3, 3, 3, 1]
-])
+#     M3 = CoxeterMatrix([
+#     [1, 3, 3, 3, 3, 3],
+#     [3, 1, 3, 3, 3, 3],
+#     [3, 3, 1, 3, 3, 3],
+#     [3, 3, 3, 1, 3, 3],
+#     [3, 3, 3, 3, 1, 3],
+#     [3, 3, 3, 3, 3, 1]
+# ])
     InfiniteGraph = CoxeterMatrix([
         [1, -2, 2, 2, 2],
         [-2, 1, 3, 2, 2],
@@ -135,17 +136,28 @@ def main():
         [2, 2, 3, 1 , -2],
         [2, 2, 2, -2, 1]
     ])
+
+    load("test_case.sage")
+
+
     print("__________________________________")
     start = time.time()
-    level1 = check_level(InfiniteGraph)
+    level1 = check_level(M3)
+    
     delta1 = time.time() - start
     print("Level of the graph with check_level : ", level1, " Time taken: ", delta1)
+
+
+    os.makedirs("graphs_image", exist_ok=True)
+    M3.coxeter_graph().plot().save(f"./graphs_image/{M3.name}.png")
+
     # start = time.time()
     # level2 = get_level(InfiniteGraph)
     # delta2 = time.time() - start
     # print("Level of the graph with get level : ", level2, " Time taken: ", delta2)
     # print("The fastest method is: ", "check_level" if delta1 < delta2 else "get_level")
     # print("__________________________________")
+
 
 
 main()
