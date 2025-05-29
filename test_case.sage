@@ -17,11 +17,11 @@ M2 = CoxeterMatrix([
 
 
 """
-   O
-  / \
- O-O-O - O - O 
- |/ \|
- O _ O
+     O
+  /     \
+ O - O - O - O - O 
+ | /   \ |
+ O  __  O
 """
 M3 = CoxeterMatrix([
     [1, 3, 3, 2 ,2 ,2 ,2,2],

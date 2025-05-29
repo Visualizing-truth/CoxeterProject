@@ -138,26 +138,26 @@ def main():
     ])
 
     load("test_case.sage")
+    load("divide_conquer.sage")
 
+    test = M3
 
     print("__________________________________")
     start = time.time()
-    level1 = check_level(M3)
-    
+    level1 = check_level(test)
     delta1 = time.time() - start
     print("Level of the graph with check_level : ", level1, " Time taken: ", delta1)
 
+    print("__________________________________")
+    start = time.time()
+    level2 = get_level(test)
+    delta2 = time.time() - start
+    print("Level of the graph with get_level : ", level2, " Time taken: ", delta2)
+
+
 
     os.makedirs("graphs_image", exist_ok=True)
-    M3.coxeter_graph().plot().save(f"./graphs_image/{M3.name}.png")
-
-    # start = time.time()
-    # level2 = get_level(InfiniteGraph)
-    # delta2 = time.time() - start
-    # print("Level of the graph with get level : ", level2, " Time taken: ", delta2)
-    # print("The fastest method is: ", "check_level" if delta1 < delta2 else "get_level")
-    # print("__________________________________")
-
+    test.coxeter_graph().plot().save(f"./graphs_image/{test.name}.png")
 
 
 main()
