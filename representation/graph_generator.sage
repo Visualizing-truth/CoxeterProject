@@ -1,5 +1,5 @@
 
-nodes = 5
+nodes = 6
 count = 0
 for g in graphs.nauty_geng(f"{nodes} -c"):
      count += 1
