@@ -1,14 +1,20 @@
 import time
 import os
 
-# TO DO
 def is_repr_affine(CM):
+    """
+    Return whether the coxeter graph represented by ``self`` is affine.
+    A coxeter graph is affine if the bilinear form associated with the coxeter matrix has no negative eigenvalues.
+
+    EXAMPLES::
+        sage: CoxeterMatrix([[1, 2], [2, 1]]).is_repr_affine()
+        True
+        sage: CoxeterMatrix([[1, 2, 2], [2, 1, 3], [2, 3, 1]]).is_repr_affine()
+        False
+    """
     bilinear_form = CM.bilinear_form()
     eigenvalues = bilinear_form.eigenvalues()
-    for eigenvalue in eigenvalues:
-        if eigenvalue < 0:
-            return False
-    return True
+    return all(eigenvalue >= 0 for eigenvalue in eigenvalues)
 
 
 def is_level_0(CM):
@@ -24,7 +30,7 @@ def is_level_0(CM):
         False
 
     """
-    return CM.is_finite() or CM.is_affine() #or is_repr_affine(CM)
+    return CM.is_finite() or CM.is_affine() #or (is_repr_affine(CM)) valid only if there is no cycle
 
 
 
@@ -91,7 +97,6 @@ def main():
     level1 = get_level(test)
     delta1 = time.time() - start
     print("Level of the graph with get_level : ", level1, " Time taken: ", delta1)
-
 
 
 main()
