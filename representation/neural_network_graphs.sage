@@ -6,12 +6,12 @@ load("coxeter_graphs.sage")
 load("cm_utils.sage")
 
 
-label_values = [4, 5, 6, 7]
+label_values = [3,4, 5, 6, 7]
 nodes = 4
 csv_filename = "coxeter_matrices.csv"
 
 
-with open(csv_filename, mode='w', newline='') as file:
+with open(csv_filename, mode='a', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(["ID", "NumNodes", "Level", "Matrix"])
 
@@ -23,8 +23,6 @@ with open(csv_filename, mode='w', newline='') as file:
             graph += 1
             CM = CoxeterMatrix(g)
             origin_matrix = get_matrix(CM)
-            count += 1
-            writer.writerow([count, i, get_level(CM)] + list(origin_matrix))
             positions = [(j, k) for j in range(i) for k in range(j+1, i) if origin_matrix[j][k] == 3]
 
             for label_comb in product(label_values, repeat=len(positions)):
