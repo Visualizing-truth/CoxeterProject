@@ -3,7 +3,7 @@ import networkx as nx
 def copy(CM):
     return CoxeterMatrix(CM)
 
-def len(CM):
+def get_len(CM):
     return CM._matrix.nrows()
 
 def get_matrix(CM):

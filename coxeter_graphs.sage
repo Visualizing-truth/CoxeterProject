@@ -87,16 +87,3 @@ def get_level(CM):
             if all(is_level_0(coxeter_matrix) for coxeter_matrix in subgraphs):
                 return i
 
-def main():
-    load("./test/test_case.sage")
-
-    test = M3
-
-    print("__________________________________")
-    start = time.time()
-    level1 = get_level(test)
-    delta1 = time.time() - start
-    print("Level of the graph with get_level : ", level1, " Time taken: ", delta1)
-
-
-main()
