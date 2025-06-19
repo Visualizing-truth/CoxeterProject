@@ -1,9 +1,5 @@
 from itertools import permutations
 def get_lineup_polytope(p):
-
-    sum = 0
-    for i in range(1, len(p) + 1):
-        sum += i
     
     nb_vertices = len(p)
 
@@ -14,18 +10,17 @@ def get_lineup_polytope(p):
 
 
     w = list(range(1, nb_vertices + 1))
+    w = [wi / sum(w) for wi in w]
 
     vertices = []
-    vert = [0,0]
 
     for perm in permutations(w):
         current_vertex = [0,0]
-        for i in range(4):
+        for i in range(nb_vertices):
             current_vertex[0] += perm[i]*p[i][0]
             current_vertex[1] += perm[i]*p[i][1]
 
-        vert = [1/sum * current_vertex[0], 1/sum * current_vertex[1]]
-        vertices.append(vert)
+        vertices.append([current_vertex[0],current_vertex[1]])
 
     P = Polyhedron(vertices=vertices)
 
