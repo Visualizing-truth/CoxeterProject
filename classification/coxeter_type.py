@@ -677,13 +677,3 @@ class CoxeterTypeFromCartanType(UniqueRepresentation, CoxeterType):
         """
         return CoxeterType(self._cartan_type.relabel(relabelling))
 
-class CoxeterTypeFromMatrix(UniqueRepresentation, CoxeterType):
-    """
-    A Coxeter type associated to a Coxeter matrix.
-    """
-    @staticmethod
-    def __classcall_private__(cls, coxeter_matrix):
-        """
-        EXAMPLES::
-
-        """
