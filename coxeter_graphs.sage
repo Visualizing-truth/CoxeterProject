@@ -61,7 +61,7 @@ def delete_nodes(CM, a):
 
     
 
-def get_level(CM):
+def level(CM):
     """
     Return the level of the coxeter graph represented by ``self``.
     
@@ -70,12 +70,12 @@ def get_level(CM):
 
 
     EXAMPLES::
-    sage: M = CoxeterMatrix([[1, 2, 3], [2, 1, 4], [3, 4, 1]])
-    sage: get_level(M)
-    1
-    sage: M2 = CoxeterMatrix([[1, 2, 3, 4], [2, 1, 5, 6], [3, 5, 1, 7], [4, 6, 7, 1]])
-    sage: get_level(M2)
-    2
+        sage: M = CoxeterMatrix([[1, 2, 3], [2, 1, 4], [3, 4, 1]])
+        sage: get_level(M)
+        1
+        sage: M2 = CoxeterMatrix([[1, 2, 3, 4], [2, 1, 5, 6], [3, 5, 1, 7], [4, 6, 7, 1]])
+        sage: get_level(M2)
+        2
     
     """
     n = len(CM.index_set())
