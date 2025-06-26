@@ -88,6 +88,34 @@ def level(CM):
             if all(is_level_0(coxeter_matrix) for coxeter_matrix in subgraphs):
                 return i
 
+def is_strict(CM)
+    """
+    input: Coxeter Matrix and integer
+    output: bool
+    Takes as input the coxeter matrix, it calculates the level of the graph and then finally returns whether it is strict or not.
+    Remark: this is a mroe general verison of .is_finite() method.
+    """
+
+    if CM.is_finite():
+        return True
+    if CM.is_affine():
+        return False
+    level = check_level(CM)
+    subgraphs = delete_nodes(CM, level)
+    if all(graph.is_finite() for graph in subgraphs):
+        return True
+    return False
+
+def showGraph(g, num):
+    """
+    input: coxeter graph, integer
+    output: Null
+
+    Takes a coxeter graph and saves its image in the current folder with num in the name of the png file.
+    """
+    plot = g.plot(edge_labels=True)
+    plot.save(f"graph{num}.png")
+
 
 def main():
     load("classification/type_hyperbolic.py")
