@@ -72,7 +72,7 @@ def delete_nodes(CM, a):
 #     return n-1
     
 
-def check_level(CM):
+def level(CM):
     """
     input: G:square matrix (symmetric matrix with diagnol values 1)
     output: int
@@ -91,6 +91,33 @@ def check_level(CM):
             subgraphs = delete_nodes(CM, i)
             if all(is_level_0(coxeter_matrix) for coxeter_matrix in subgraphs):
                 return i
+
+def is_strict(CM):
+    """
+    input: Coxeter Matrix and integer
+    output: bool
+    Takes as input the coxeter matrix, it calculates the level of the graph and then finally returns whether it is strict or not.
+    Remark: this is a mroe general verison of .is_finite() method.
+    """
+    if CM.is_finite():
+        return True
+    if CM.is_affine():
+        return False
+    level = level(CM)
+    subgraphs = delete_nodes(CM, level)
+    if all(graph.is_finite() for graph in subgraphs):
+        return True
+    return False
+
+def showGraph(g, num):
+    """
+    input: coxeter graph, integer
+    output: Null
+
+    Takes a coxeter graph and saves its image in the current folder with num in the name of the png file.
+    """
+    plot = g.plot(edge_labels=True)
+    plot.save(f"graph{num}.png")
 
 def main():
 
@@ -145,9 +172,9 @@ def main():
 
     print("__________________________________")
     start = time.time()
-    level1 = check_level(test)
+    level1 = level(test)
     delta1 = time.time() - start
-    print("Level of the graph with check_level : ", level1, " Time taken: ", delta1)
+    print("Level of the graph with level : ", level1, " Time taken: ", delta1)
 
     print("__________________________________")
     start = time.time()
