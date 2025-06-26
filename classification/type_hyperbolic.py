@@ -1,10 +1,11 @@
-
-
+from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+from sage.combinat.root_system.coxeter_type import CoxeterType 
 
 """
-Hyperbolic Coxeter matrices for hyperbolic Coxeter types.
-These matrices are defined by there position in the humphreys book. The first number in the parenthesis is the
-page, the second number is the column and the third number is the row.
+    Hyperbolic Coxeter matrices for hyperbolic Coxeter types.
+    These matrices are defined by there position in the humphreys book. The first number in the parenthesis is the
+    page, the second number is the column and the third number is the row.
+
 """
 hyperbolic_coxeter_matrices = {
     (141, 1, 1): CoxeterMatrix([
@@ -12,7 +13,7 @@ hyperbolic_coxeter_matrices = {
                 [4,1,3,2],
                 [2,3,1,5],
                 [2,2,5,1]
-            ]), 
+            ]),
     (141, 1, 2): CoxeterMatrix([
                 [1,3,2,2],
                 [3,1,5,2],
@@ -551,7 +552,9 @@ class CoxeterType_Hyperbolic(CoxeterType):
         """
         EXAMPLES::
 
-            sage: C = CoxeterType(["Hyp", (2, 1, 3)])
+            sage: C = CoxeterType(["Hyp", (142, 1, 3)])
+            sage: C
+            Coxeter type with Humphrey's datum (142, 1, 3)
         """
         self._acronym = accronym
         self._position = position
@@ -565,40 +568,129 @@ class CoxeterType_Hyperbolic(CoxeterType):
     
 
     def rank(self):
+        """
+        Return the rank of ``self``.
+
+        This is the number of nodes of the associated Coxeter graph.
+
+        EXAMPLES::
+
+            sage: CoxeterType(['Hyp', (144,1,10)]).rank()
+            10
+            sage: CoxeterType(['Hyp', (142,2,2)]).rank()
+            4
+        """
         return hyperbolic_coxeter_matrices[self._position].rank()
     
     def coxeter_matrix(self):
         """
-        Return the Coxeter matrix of the hyperbolic Coxeter type.
+        Return the Coxeter matrix of ``self``.
 
         EXAMPLES::
 
-            sage: ct = CartanType(["Hyp", 2, 1, 3])
+            sage: ct = CartanType(["Hyp", (142, 2, 1)])
             sage: ct.coxeter_matrix()
-            [[1,4,4,2], [4,1,2,4], [4,2,1,4], [2,4,4,1]]
+            [1 3 3 2]
+            [3 1 2 4]
+            [3 2 1 3]
+            [2 4 3 1]
         """
         return hyperbolic_coxeter_matrices[self._position]
     
     def humphreys_reference(self):
 
-        return f"Page : {self._position[0]}, Column : {self._position[1]}, Row : {self._position[2]}"
-    
-    def bilinear_form(self):
+        """
+        Return a string with the reference to Humphreys' Reflection groups and Coxeter groups.
+        The reference is given by the page, column and row of the table in the book.
 
-        return self.coxeter_matrix().bilinear_form()
+        EXAMPLES::
+            sage: C = CoxeterType(["Hyp", (142, 1, 3)])
+            sage: C.humphreys_reference()
+            'Page : 142, Column : 1, Row : 3'
+        """
+
+        return f"Page : {self._position[0]}, Column : {self._position[1]}, Row : {self._position[2]}"
+
     
     def coxeter_graph(self):
+        """
+        Return the Coxeter graph associated to ``self``.
+
+        EXAMPLES::
+
+            sage: C = CoxeterType(["Hyp",(141, 2, 1)])
+            sage: C.coxeter_graph()
+            Graph on 4 vertices
+
+            sage: C = CoxeterType(["Hyp",(144, 1, 1)])
+            sage: C.coxeter_graph()
+            Graph on 8 vertices
+        """
         return self.coxeter_matrix().coxeter_graph()
     
     def is_hyperbolic(self):
+        """
+        Return ``True`` since ``self`` is a hyperbolic Coxeter type.
+        """
         return True
     
     def index_set(self):
+        """
+        Return the index set for ``self``.
+
+        This is the list of the nodes of the associated Coxeter graph.
+
+        EXAMPLES::
+
+            sage: C = CoxeterType(["Hyp",(144, 1, 1)])
+            sage: C.index_set()
+            (1, 2, 3, 4, 5, 6, 7, 8)
+
+            sage: C = CoxeterType(["Hyp",(143, 1, 6)])
+            sage: C.index_set()
+            (1, 2, 3, 4, 5, 6)
+
+        """
         return self.coxeter_matrix().index_set()
+    
     def is_affine(self):
+        """
+        Return ``False`` since all hyperbolic coxeter graph is not affine.
+
+        EXAMPLES::
+
+            sage: C = CoxeterType(["Hyp",(142, 3, 4)])
+            sage: C.is_affine()
+            False
+        """
         return self.coxeter_matrix().is_affine()
+    
     def is_finite(self):
+        """
+        Return ``False`` since all hyperbolic coxeter matrix is not finite.
+
+        EXAMPLES::
+
+            sage: C = CoxeterType(["Hyp",(142, 3, 4)])
+            sage: C.is_finite()
+            False
+        """
         return self.coxeter_matrix().is_finite()
+    
     def is_crystallographic(self):
+        """
+        Return whether ``self`` is crystallographic.
+
+
+        EXAMPLES::
+
+            sage: C = CoxeterType(["Hyp",(142, 3, 4)])
+            sage: C.is_crystallographic()
+            True
+
+            sage: C = CoxeterType(["Hyp",(141, 1, 1)])
+            sage: C.is_crystallographic()
+            False
+        """
         return self.coxeter_matrix().is_crystallographic()
     

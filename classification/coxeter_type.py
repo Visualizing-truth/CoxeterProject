@@ -30,6 +30,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.sage_object import SageObject
 
 lazy_import('sage.rings.universal_cyclotomic_field', 'UniversalCyclotomicField')
+lazy_import('sage.combinat.root_system.type_hyperbolic', 'CoxeterType_Hyperbolic')
 
 
 class CoxeterType(SageObject, metaclass=ClasscallMetaclass):
@@ -54,7 +55,6 @@ class CoxeterType(SageObject, metaclass=ClasscallMetaclass):
         
         if isinstance(x,list) and x[0] == "Hyp" or x[0] == "Hyperbolic":
             return CoxeterType_Hyperbolic(*x)
-
 
         try:
             return CoxeterTypeFromCartanType(CartanType(x))
@@ -190,10 +190,10 @@ class CoxeterType(SageObject, metaclass=ClasscallMetaclass):
                                            ['E', 7, 1], ['E', 8, 1], ['F', 4, 1],
                                            ['G', 2, 1], ['A', 1, 1]]]
         
-        hyperbolic = [CoxeterType(t) for t in [['Hyp', (1, 1, 3)], ['Hyp', (1, 1, 4)], 
-                                            ['Hyp', (1, 1, 5)], ['Hyp', (2, 1, 6)],
-                                            ['Hyp', (2, 1, 7)], ['Hyp', (2, 1, 8)],
-                                            ['Hyp', (2, 1, 9)]]]
+        hyperbolic = [CoxeterType(t) for t in [['Hyp', (141, 1, 3)], ['Hyp', (141, 1, 4)], 
+                                            ['Hyp', (141, 2, 5)], ['Hyp', (142, 1, 6)],
+                                            ['Hyp', (142, 1, 7)], ['Hyp', (142, 1, 8)],
+                                            ['Hyp', (144, 1, 3)]]]
 
         return finite + affine + hyperbolic
 
@@ -676,4 +676,3 @@ class CoxeterTypeFromCartanType(UniqueRepresentation, CoxeterType):
             Coxeter type of ['A', 2] relabelled by {1: -1, 2: -2}
         """
         return CoxeterType(self._cartan_type.relabel(relabelling))
-
