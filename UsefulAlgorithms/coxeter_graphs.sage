@@ -53,10 +53,11 @@ def delete_nodes(CM, a):
     
     n = Matrix(CM).nrows()
     C = Combinations(range(n), a)
+    m = CM._matrix_()
 
     for comb in C:
         actual = [i for i in range(n) if i not in comb] # look at filter
-        submat = Matrix(CM)[actual, actual]
+        submat = m[actual, actual]
         yield CoxeterMatrix(submat)
 
     
