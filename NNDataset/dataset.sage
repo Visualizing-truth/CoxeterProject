@@ -2,7 +2,7 @@ import random
 import numpy as np
 import csv
 
-load("CoxeterProperties.sage")
+load("../UsefulAlgorithms/level_algorithms.sage")
 load("misc.sage")
 
 def generateType(kind, startIndex, finite):
@@ -67,7 +67,7 @@ def arrayForCSV(ls):
     for c in ls:
         c = CoxeterMatrix(c)
         arrayC = []
-        arrayC.append(f"{check_level(c)}")
+        arrayC.append(f"{level(c)}")
         m = c._matrix_()
         for i in range(len(m.rows())):
             for j in range(len(m.rows())):
