@@ -88,7 +88,7 @@ def level(CM):
             if all(is_level_0(coxeter_matrix) for coxeter_matrix in subgraphs):
                 return i
 
-def is_strict(CM)
+def is_strict(CM):
     """
     input: Coxeter Matrix and integer
     output: bool
@@ -106,21 +106,12 @@ def is_strict(CM)
         return True
     return False
 
-def showGraph(g, num):
+def showGraph(g, words):
     """
-    input: coxeter graph, integer
+    input: coxeter graph, string
     output: Null
 
     Takes a coxeter graph and saves its image in the current folder with num in the name of the png file.
     """
     plot = g.plot(edge_labels=True)
-    plot.save(f"graph{num}.png")
-
-
-def main():
-    load("classification/type_hyperbolic.py")
-
-    for matrix in hyperbolic_coxeter_matrices:
-        print(f"Matrix: {matrix} : level = {get_level(hyperbolic_coxeter_matrices[matrix])}")
-
-main()
+    plot.save(f"graphImage_{words}.png")
