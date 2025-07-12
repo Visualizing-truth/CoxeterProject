@@ -1,5 +1,7 @@
 import random
 
+load("../UsefulAlgorithms/coxeter_graphs.sage")
+
 cases = []
 labels = [3, 4, 5, 6, 7]
 # Weights for each label: higher weights for 3,4,5
@@ -40,7 +42,6 @@ def remove_isomorphic_graphs(all_cases):
                 unique_graphs.append(g)
     return unique_graphs
             
-
 
 
     

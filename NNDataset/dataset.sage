@@ -2,7 +2,7 @@ import random
 import numpy as np
 import csv
 
-load("../UsefulAlgorithms/level_algorithms.sage")
+load("../UsefulAlgorithms/coxeter_graphs.sage")
 load("misc.sage")
 
 def generateType(kind, startIndex, finite):
@@ -61,13 +61,17 @@ ls2 = generateType('A', 1, False) + generateType('B', 3, False) + generateType('
 affine = [CoxeterType.samples(finite=False)[i].coxeter_matrix() for i in range(4, 9)] + ls2
 
 
+def is_strict_data(c):
+    if is_strict(c):
+        return 0
+    return 1
 
-def arrayForCSV(ls):
+def arrayForCSV(ls, func):
     arrayLs = []
     for c in ls:
         c = CoxeterMatrix(c)
         arrayC = []
-        arrayC.append(f"{level(c)}")
+        arrayC.append(f"{func(c)}")
         m = c._matrix_()
         for i in range(len(m.rows())):
             for j in range(len(m.rows())):
@@ -78,12 +82,13 @@ def arrayForCSV(ls):
     return arrayLs
 
 
-final_data = arrayForCSV(finite)+arrayForCSV(affine)+arrayForCSV(remove_isomorphic_graphs(getAllGraphs(50)))
+final_data = arrayForCSV(remove_isomorphic_graphs(getAllGraphs(2)), is_strict_data)
 
+count=1
+for graph in remove_isomorphic_graphs(getAllGraphs(2)):
+    showGraph(graph, count)
+    count+=1
 
-print(len(finite))
-print(len(affine))
-print(len(final_data))
 
 header = ["label"] + [f"value{i+1}" for i in range(9**2)] 
 
