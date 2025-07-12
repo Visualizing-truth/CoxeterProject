@@ -3,7 +3,7 @@ import os
 
 def is_repr_affine(CM):
     """
-    Return whether the coxeter graph represented by ``self`` is affine.
+    Returns whether the coxeter graph represented by ``self`` is affine.
     A coxeter graph is affine if the bilinear form associated with the coxeter matrix has no negative eigenvalues.
 
     EXAMPLES::
@@ -100,8 +100,8 @@ def is_strict(CM):
         return True
     if CM.is_affine():
         return False
-    level = check_level(CM)
-    subgraphs = delete_nodes(CM, level)
+    lvl = level(CM)
+    subgraphs = delete_nodes(CM, lvl)
     if all(graph.is_finite() for graph in subgraphs):
         return True
     return False
@@ -115,3 +115,5 @@ def showGraph(g, words):
     """
     plot = g.plot(edge_labels=True)
     plot.save(f"graphImage_{words}.png")
+
+
