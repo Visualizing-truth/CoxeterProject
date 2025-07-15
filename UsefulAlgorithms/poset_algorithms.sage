@@ -128,7 +128,7 @@ def get_final_order(order, A2):
 
     return orders[-1]
 
-def rank(g):
+def get_rank(g):
     """
         Returns the order with respect to the following convention: 
         A1: 0
@@ -177,18 +177,18 @@ def exists_relation(g1, g2):
             if diff_edges==0:
                 if graph.is_isomorphic(g2):
                     return True
-            if diff_edges>0:
+            #if diff_edges>0:
                 # Remove diff_edges in all possible
                 # ways and the see if the result is 
                 # isomorphic to g2.
-                       
+
     return False
 
 def main():
     f4=CoxeterType(['F', 4])
     g4=f4.coxeter_graph()
     
-    a7=CoxeterType(['A', 7]).coxeter_graph()
+    a7=CoxeterType(['A', 7])
     gg=CoxeterMatrix([
                 [1, 7, 2, 2, 2, 2, 2],
                 [7, 1, 3, 3, 2, 2, 2],
@@ -197,12 +197,5 @@ def main():
                 [2, 2, 2, 3, 1, 3, 3],
                 [2, 2, 2, 2, 3, 1, 2],
                 [2, 2, 2, 2, 3, 2, 1]
-            ]).coxeter_graph()
-    a3=CoxeterType(['A',3]).coxeter_graph()
-    i5=CoxeterType(['I', 5]).coxeter_graph()
-
-    print(exists_relation(i5,a3))
-
-    print(exists_relation(gg, a7))
-    
-main()
+            ])
+    print(a7.coxeter_matrix())
