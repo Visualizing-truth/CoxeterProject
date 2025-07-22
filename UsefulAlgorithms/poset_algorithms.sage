@@ -156,11 +156,33 @@ def remove_vertices(g, a):
         h.delete_vertices(comb)
         yield h
 
+def same_nodes(g1, g2):
+    """
+        This function assumes same nodes
+    """
+
+    if get_rank(graph)>=get_rank(g2):
+        diff_edges=len(graph.edges())-len(g2.edges())
+        if diff_edges==0:
+            if graph.is_isomorphic(g2):
+                return True
+            else:
+                return False
+            if diff_edges>0:
+                for edge in graph.edges():
+                    graph_h = copy(g)
+                    graph_h.delete_edge(edge)
+
+
 
 def exists_relation(g1, g2):
-    """
-        This function assumes rank(g1)>rank(g2).
-    """
+
+    if get_rank(g1) < get_rank(g2):
+        tmp=g1
+        g1=g2
+        g2=tmp
+
+
     if max(g1.edge_labels()) < max(g2.edge_labels()):
         return False
 
@@ -172,30 +194,19 @@ def exists_relation(g1, g2):
     deletion_graphs=remove_vertices(g1, diff_vert)
 
     for graph in remove_isomorphic_graphs(deletion_graphs):
-        if rank(graph)>=rank(g2):
+        if get_rank(graph)>=get_rank(g2):
             diff_edges=len(graph.edges())-len(g2.edges())
             if diff_edges==0:
                 if graph.is_isomorphic(g2):
                     return True
-            #if diff_edges>0:
-                # Remove diff_edges in all possible
-                # ways and the see if the result is 
-                # isomorphic to g2.
-
+                else:
+                    return False
     return False
 
 def main():
-    f4=CoxeterType(['F', 4])
-    g4=f4.coxeter_graph()
-    
-    a7=CoxeterType(['A', 7])
-    gg=CoxeterMatrix([
-                [1, 7, 2, 2, 2, 2, 2],
-                [7, 1, 3, 3, 2, 2, 2],
-                [2, 3, 1, 2, 2, 2, 2],
-                [2, 3, 2, 1, 3, 2, 2],
-                [2, 2, 2, 3, 1, 3, 3],
-                [2, 2, 2, 2, 3, 1, 2],
-                [2, 2, 2, 2, 3, 2, 1]
-            ])
-    print(a7.coxeter_matrix())
+    a3 = CoxeterType(['A', 3]).coxeter_graph()
+    a2 = CoxeterType(['A', 2]).coxeter_graph()
+    i4 = CoxeterType(['I', 4]).coxeter_graph()
+
+
+main()

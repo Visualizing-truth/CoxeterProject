@@ -117,5 +117,29 @@ def showGraph(g, words):
     plot.save(f"graphs/graphImage_{words}.svg")
 
 
+def coxeter_matrix_from_graph(g):
+    """
+        Construct a Coxeter Matrix (of type Matrix) from a coxeter graph.
+        
+        Example:
+            sage: a2 = CoxeterType(['A', 2]).coxeter_graph()
+            sage: m = coxeter_matrix_from_graph(a2)
+            sage: m
+            [1 3]
+            [3 1]
+    """
+    n = len(g.vertices())
+    m = Matrix(n)
+    vertices = g.vertices()
+    for i in range(n):
+        for j in range(i, n):
+            if i == j:
+                m[i, j]=1
+            elif g.has_edge(vertices[i], vertices[j]):
+                m[i, j]=m[j, i]=g.edge_label(vertices[i], vertices[j])
+            else:
+                m[i, j]=m[j, i]=2
+    return m
+
 
 
