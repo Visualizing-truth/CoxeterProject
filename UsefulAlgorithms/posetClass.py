@@ -12,8 +12,23 @@ class poset_graph:
         self.children = children if children is not None else []
         self.coxeter_matrix = coxeter_matrix
     
+    def signature():
+        m = CoxeterMatrix(self.coxeter_matrix)
+        
+        b = m.bilinear_form()
+        b.eigenvalues()
     def __str__(self):
-          return self.coxeter_graph.edges().__str__()
+        n = self.coxeter_matrix.ncols()
+        rep = []
+        for i in range(n):
+            for j in range(i+1, n):
+                rep.append(self.coxeter_matrix[i, j])
+                
+        m = CoxeterMatrix(self.coxeter_matrix)
+        
+                
+                
+        return rep.__str__() + f", {level(CoxeterMatrix(self.coxeter_matrix))}"
     
     def __eq__(self, other):
         # Two poset_graphs are equal if their coxeter_graphs are isomorphic (with edge labels)

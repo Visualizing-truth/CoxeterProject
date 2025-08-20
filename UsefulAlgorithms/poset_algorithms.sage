@@ -4,7 +4,8 @@ load("coxeter_graphs.sage")
 def remove_isomorphic_graphs(all_cases):
     """
         Returns a list of unique coxeter graphs upto isomorphism by removing
-        the duplicates from the input list "all_cases".
+        the duplicates from the input list of coxeter grphs: "all_cases".
+
 
         EXAMPLES::
 
@@ -39,6 +40,23 @@ def increase_labels(g):
         else:
             h.add_edge(u, v, 3) # label=3
         yield h
+def decrease_labels(g):
+    subgraphs=[]
+    for comb in Combinations(g.vertices(), 2):
+        u, v = comb
+        h = copy(g)
+        
+        if g.has_edge(u,v):
+            # this implies that the edge label is more than or equal to 3
+            if g.edge_label(u, v) == 3:
+                h.delete_edge(u, v)
+                if h.is_connected():
+                    subgraphs.append(h)
+            else:
+                h.set_edge_label(u, v, g.edge_label(u, v) -1)
+                subgraphs.append(h)
+        
+    return remove_isomorphic_graphs(subgraphs)
 
 def add_node(g):
     """
@@ -109,7 +127,7 @@ def get_next_order(prev_order):
         This function is really scrapy right now
     """
     for graph in prev_order:
-        for g in generate_graphs(graph):
+        for g in generate_graphs(graph): 
             yield g
 
 def get_final_order(order, A2):
@@ -130,6 +148,7 @@ def get_final_order(order, A2):
 
 def get_rank(g):
     """
+        Takes a coxeter graph and returns its rank
         Returns the order with respect to the following convention: 
         A1: 0
         A2: 1
@@ -145,7 +164,7 @@ def get_rank(g):
 def remove_vertices(g, a):
     """
         Returns an iterator of different coxeter graphs
-        obtained after removing a vertices from g (for 
+        obtained after removing `a` vertices from g (for 
         all different ways).
     """
     C = Combinations(g.vertices(), a)
@@ -196,7 +215,7 @@ def exists_relation(g1, g2):
     for graph in remove_isomorphic_graphs(deletion_graphs):
         if get_rank(graph)>=get_rank(g2):
             diff_edges=len(graph.edges())-len(g2.edges())
-            if diff_edges==0:
+            if diff_edges==0:  
                 if graph.is_isomorphic(g2):
                     return True
                 else:

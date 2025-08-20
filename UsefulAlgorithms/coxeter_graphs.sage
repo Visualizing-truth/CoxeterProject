@@ -113,7 +113,7 @@ def showGraph(g, words):
 
     Takes a coxeter graph and saves its image in the current folder with num in the name of the png file.
     """
-    plot = g.plot(edge_labels=True,layout='circular', figsize=(3, 3))
+    plot = g.plot(edge_labels=True,layout='spring', figsize=(3, 3))
     plot.save(f"graphs/graphImage_{words}.svg")
 
 
