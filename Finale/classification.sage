@@ -1,7 +1,7 @@
 import time
+import itertools
 
 # **** Functinos for Coxeter Matrix ****
-
 def is_level_0(CM):
     """
     Return whether the coxeter graph represented by ``self`` is level 0.
@@ -105,23 +105,25 @@ def level_bound(CM, leq_num, geq_num):
         geq = True
     return leq and geq
 
-def is_lorentzian(CM): 
+def signature(CM):
     b = CM.bilinear_form()
     pos=0
     neg=0
-    lorentzian=False
+    zeros=0
     roots = b.charpoly().roots(AA)
     for root in roots:
         if root[0]>0:
             pos+=root[1]
-        if root[0]<0:
+        elif root[0]<0:
             neg+=root[1]
-    if neg == 1:
-        lorentzian=True
-    return lorentzian
-    
-# **** Functions for Coxeter Graph ****
+        else:
+            zeros+=root[1]
+    return ((pos, zeros, neg))
 
+def is_lorentzian(CM): 
+    return signature(CM)[2] == 1
+
+# **** Functions for Coxeter Graph ****
 def showGraph(g, words):
     """
     input: coxeter graph, string
@@ -221,6 +223,9 @@ def get_subgraphs(cg):
     for l in decrease_labels(cg):
         yield l
 
+def is_minimal(cg, lvl):
+    return all(level_bound(coxeter_matrix_from_graph(p), lvl-1, -1) for p in get_subgraphs(cg))
+
 def coxeter_matrix_from_graph(cg):
     """
         Construct a Coxeter Matrix (of type Coxeter Matrix) from a coxeter graph.
@@ -245,37 +250,56 @@ def coxeter_matrix_from_graph(cg):
                 m[i, j]=m[j, i]=2
     return CoxeterMatrix(m)
 
-# **** Functions for Generator/list of coxeter graphs ****
+def get_graph_key(cg):
+    g_canon=cg.canonical_label(edge_labels=True)
+    edge_data = tuple(sorted(g_canon.edges(labels=True)))
+    return edge_data
 
-def remove_isomorphic_graphs(ls_of_graphs):
+# **** Functions for Generator/list of coxeter graphs ****
+def remove_isomorphic_graphs(gen_graphs):
     """
         Returns a list of unique coxeter graphs upto isomorphism by removing
         the duplicates from the input list of coxeter grphs: "all_cases".
 
         EXAMPLES::
     """
+    seen=set()
+    st = time.time()
+    for g in gen_graphs:
+        key=g.canonical_label(edge_labels=True).graph6_string()
+        if key not in seen:
+            seen.add(key)
+            yield g
+    tt = time.time() - st
+    print(f"Total time taken: {tt}")
+
+def remove_isomorphic_graphs_2(gen_graphs):
     unique_graphs = []
-    for g in ls_of_graphs:
+    st = time.time()
+    for g in gen_graphs:
         if len(unique_graphs) == 0:
             unique_graphs.append(g)
-        else:
-            if not any(g.is_isomorphic(prevGraph, edge_labels=True) for prevGraph in unique_graphs):
-                unique_graphs.append(g)
+        else: 
+            if not any(g.is_isomorphic(prevGraph, edge_labels=True) for prevGraph in unique_graphs): 
+                unique_graphs.append(g) 
+    tt = time.time()-st
+    print(f"Total time taken: {tt}")
     return unique_graphs
 
-def get_next_rank(prev_rank_graphs):
+
+def get_next_rank(gen_graphs):
     """
         Given a list of coxeter graph all of a certain rank. The following function gives the 
         list of next rank.
     """
-    next_gen = []
-    for g in prev_rank_graphs:
-        upper_covers = remove_isomorphic_graphs(generate_graphs(g))
-        next_gen += upper_covers
-    # Should I use remove_isomorphic graphs two times here?
-    return remove_isomorphic_graphs(next_gen)
-    # Maybe use dictionaries here ?!
-
+    seen={}
+    for g in gen_graphs:
+        upper_covers = generate_graphs(g)
+        for child in upper_covers:
+            key = get_graph_key(child)
+            if key not in seen:
+                seen[key]=child
+    return seen.values()
 
 def filter_level(rank_graphs, leq, geq):
     for g in rank_graphs:
@@ -293,31 +317,34 @@ def filter_nodes(gen_graphs, geq):
     for g in gen_graphs:
         if len(g.vertices())>=geq:
             yield g
+def filter_minimal(gen_graphs, lvl):
+    for g in gen_graphs:
+        if all(level_bound(p, lvl-1, -1) for p in get_subgraphs(g)):
+            yield g
 
 # **** Scripting automation functions ****
-
 def get_all_level(start_rank_graphs, start_rank, end_rank, lvl):
     rank=start_rank
     generators = start_rank_graphs
     tt_start = time.time()
-    while rank <= end_rank:
-        print(f"Getting rank {rank}...")
-        start_time = time.time()
+    while rank < end_rank:
+        print(f"Getting rank: {rank+1}...")
+        st1 = time.time()
         next_rank = get_next_rank(generators)
-        time_taken = time.time() - start_time
-        print(f"Time taken for Rank: {rank} to be generated: {time_taken}, starting Processing...")
-        st = time.time()
+        tt1 = time.time()-st1
+        print(f"Time taken to get rank {rank+1}: {tt1}. Processing started...")
+        st2=time.time()
         for g in filter_level(next_rank, lvl, lvl-1):
             yield g
         if rank != end_rank:
             generators = filter_level(next_rank, lvl, -1)
-        tt = time.time() - st
-        print(f"Time taken for processing Rank: {rank}: {tt}")
+        tt2=time.time()-st2
+        print(f"Time taken to process rank {rank+1}: {tt2}")
         rank+=1
-    tt_diff = time.time() - tt_start
-    print(f"Total time taken: {tt_diff}!!!!")
+    tt = time.time()-tt_start
+    print(f"Total time taken: {tt}!!!!")
 
-def proposition(lvl_graphs, lvl=2):
+def proposition(lvl_graphs, max_nodes, lvl=2):
     contradictions = 0
     for g in lvl_graphs:
         if all(is_level_0(coxeter_matrix_from_graph(child)) for child in get_subgraphs(g)):
@@ -325,8 +352,47 @@ def proposition(lvl_graphs, lvl=2):
             showGraph(g, "contradiction")
             break
     return contradictions
-            
 
+def better_get_all_level(prev_level_graphs, lvl, min_nodes):
+    st = time.time()
+    first_generators = prev_level_graphs
+    next_rank = get_next_rank(prev_level_graphs)
+    first_lvl = filter_level(next_rank, lvl, lvl-1)
+    tmp_generators = filter_nodes(first_lvl, min_nodes)
+
+    seen={}
+    generator_dict={}
+    for g in tmp_generators:
+        key=get_graph_key(g)
+        generator_dict[key]=g
+    generators = generator_dict.values()
+    print(f"1 Iteration of level {lvl} graphs are: {len(generators)}")
+    done = False
+    count = 1
+
+    while not done:
+        for g in generators:
+            key = get_graph_key(g)
+            seen[key]=g
+                
+        next_rank = get_next_rank(generators)
+        print(len(next_rank))
+        tmp_generators = filter_level(next_rank, lvl, lvl-1)
+        generator_dict={}
+        for g in tmp_generators:
+            key = get_graph_key(g)
+            if key not in seen:
+                generator_dict[key]=g
+        if len(generator_dict.values()) == 0:
+            done = True
+        generators = generator_dict.values()
+        count+=1
+        print(f"{count} Iteration of level {lvl} graphs are: {len(generators)}") 
+    
+    tt = time.time()-st
+    print(f"Total time taken: {tt}s !!!!")
+    return seen.values()
+        
 a2 = CoxeterType(['A', 2]).coxeter_graph()
 r1 = [a2]
 r2 = get_next_rank(r1)

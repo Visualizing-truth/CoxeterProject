@@ -239,6 +239,8 @@ def filter_proposition(ls_of_lvl, lvl=2):
 
 
 
+
+
         
         
 
