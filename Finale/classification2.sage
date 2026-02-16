@@ -1,4 +1,5 @@
 load("classification.sage")
+import pickle
 
 def label_upper_covers(cg):
     for comb in Combinations(cg.vertices(), 2):
@@ -9,7 +10,13 @@ def label_upper_covers(cg):
             else:
                 h.add_edge(u, v, 3) # label=3
             yield h
-
+def increase_labels(cg):
+    for comb in Combinations(cg.vertices(), 2):
+        u, v = comb
+        h = copy(cg)
+        if cg.has_edge(u, v):
+            h.set_edge_label(u, v, cg.edge_label(u,v)+1)
+            yield h
 def remove_duplicates_dict(dict_graphs):
     seen={}
     for g in dict_graphs:
@@ -83,6 +90,16 @@ def get_next_label_rank(gen_graphs):
             
     return seen.values()
 
+def get_next_label_rank_it(gen_graphs):
+    seen=set()
+    for g in gen_graphs:
+        upper_covers=label_upper_covers(g)
+        for child in upper_covers:
+            key=get_graph_key(child)
+            if key not in seen:
+                seen.add(key)
+                yield child
+
 
 
 def get_next_in_chain(generators, lvl):
@@ -127,15 +144,12 @@ def get_level_final(minimal_graphs, lvl):
 
 def get_all_level_final2(minimal_graphs, lvl, min_nodes):
     st = time.time()
-
     generators={}
     seen={}
-    
     for g in filter_nodes(minimal_graphs, min_nodes):
         key=get_graph_key(g)
         generators[key]=g
         seen[key]=g
-
     count=0
     while len(generators)!=0:
         count+=1
@@ -146,15 +160,41 @@ def get_all_level_final2(minimal_graphs, lvl, min_nodes):
             key = get_graph_key(g)
             if key not in seen:
                 generators[key]=g
-        for g in generators.values():
-            key = get_graph_key(g)
-            seen[key]=g
+                seen[key]=g
         print(f"{count} generators length is: {len(generators)}")
         print(f"{count} seen length is: {len(seen)}")
+        with open(f"{count}rankLvl5.pkl", 'wb') as f:
+            pickle.dump(generators, f)
     
     tt = time.time()-st
     print(f"Total time taken: {tt}!!!!")
     return seen.values()
+
+def classify(minimal_graphs, lvl,  min_nodes):
+    st=time.time()
+    generators={}
+    for g in filter_nodes(minimal_graphs, min_nodes):
+        key=get_graph_key(g)
+        generators[key]=g 
+    seen=generators
+    count=1
+    while len(generators)!=0:
+        next_rank=get_next_label_rank_it(generators.values())
+        generators={}
+        for g in next_rank:
+            key=get_graph_key(g)
+            if key not in seen:
+                if not level_bound(coxeter_matrix_from_graph(g), -1, lvl):
+                    generators[key]=g 
+
+        seen.update(generators)
+        print(f"{count} generators length is: {len(generators)}")
+        print(f"{count} seen length is: {len(seen)}")
+        count+=1
+    
+    tt = time.time()-st
+    print(f"Total time taken: {tt}s")
+    return seen
 
 
 

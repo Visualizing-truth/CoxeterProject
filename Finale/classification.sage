@@ -1,10 +1,10 @@
 import time
 import itertools
 
-# **** Functinos for Coxeter Matrix ****
+# **** Functions for Coxeter Matrix ****
 def is_level_0(CM):
     """
-    Return whether the coxeter graph represented by ``self`` is level 0.
+    Returns whether the coxeter graph represented by ``self`` is level 0.
 
     A coxeter graph is level 0 if it is finite or affine, which means that the bilinear form associated with the coxeter matrix has no negative eigenvalues.
 
@@ -19,7 +19,7 @@ def is_level_0(CM):
 
 def delete_nodes(CM, a):
     """
-    Yield the combinations of submatrices made by deleting ``a`` nodes from the coxeter graph represented by ``self``.
+    Yields the combinations of submatrices made by deleting ``a`` nodes from the coxeter graph represented by ``self``.
 
     INPUT:
     - ``a`` -- number of nodes to delete from the coxeter matrix
@@ -44,7 +44,7 @@ def delete_nodes(CM, a):
 
 def level(CM):
     """
-    Return the level of the coxeter graph represented by ``self``.
+    Returns the level of the coxeter graph represented by ``self``.
     
     If the level of the current coxeter graph is 0, the function returns 0. 
     Otherwise, it removes a node from the graph until all possible subgraphs are level 0, and returns the number of nodes removed.
@@ -70,7 +70,7 @@ def level(CM):
 
 def level_eq(CM, lvl):
     """
-    lvl is the proposed level of the coxeter matrix.
+    Returns whether the given `lvl` is the level of the Coxeter Graph given by `CM`.
     If true then level(CM) = lvl otherwise, level(CM) != lvl
     """
     n = len(CM.index_set())
@@ -87,13 +87,22 @@ def level_eq(CM, lvl):
     return leq and geq
 
 def level_bound(CM, leq_num, geq_num):
+    """
+    For any Coxeter graph, G,  with Coxeter matrix, `CM`, returns whether leq_num <= L(G) < geq_num.
+    Here, `leq_num` is non-strict whereas `geq_num` is strict.
+    """
+    
     n = len(CM.index_set())
 
     leq=False
     geq=False
 
-    leq_subgraphs = delete_nodes(CM, leq_num)
-    leq = all(is_level_0(coxeter_matrix) for coxeter_matrix in leq_subgraphs)
+
+    if leq_num > 0:
+        leq_subgraphs = delete_nodes(CM, leq_num)
+        leq = all(is_level_0(coxeter_matrix) for coxeter_matrix in leq_subgraphs)
+    if leq_num < 0:
+        leq = True
 
     if geq_num > 0:
         geq_subgraphs = delete_nodes(CM, geq_num)
@@ -121,7 +130,7 @@ def signature(CM):
     return ((pos, zeros, neg))
 
 def is_lorentzian(CM): 
-    return signature(CM)[2] == 1
+    return signature(CM)[2]== 1 and signature(CM)[0]==matrix(CM).nrows()-1
 
 # **** Functions for Coxeter Graph ****
 def showGraph(g, words):
@@ -255,6 +264,11 @@ def get_graph_key(cg):
     edge_data = tuple(sorted(g_canon.edges(labels=True)))
     return edge_data
 
+def get_graph_from_key(key):
+    edges = list(key)
+    g = Graph(edges)
+    return g
+
 # **** Functions for Generator/list of coxeter graphs ****
 def remove_isomorphic_graphs(gen_graphs):
     """
@@ -271,7 +285,6 @@ def remove_isomorphic_graphs(gen_graphs):
             seen.add(key)
             yield g
     tt = time.time() - st
-    print(f"Total time taken: {tt}")
 
 def remove_isomorphic_graphs_2(gen_graphs):
     unique_graphs = []
@@ -283,7 +296,6 @@ def remove_isomorphic_graphs_2(gen_graphs):
             if not any(g.is_isomorphic(prevGraph, edge_labels=True) for prevGraph in unique_graphs): 
                 unique_graphs.append(g) 
     tt = time.time()-st
-    print(f"Total time taken: {tt}")
     return unique_graphs
 
 
@@ -319,7 +331,7 @@ def filter_nodes(gen_graphs, geq):
             yield g
 def filter_minimal(gen_graphs, lvl):
     for g in gen_graphs:
-        if all(level_bound(p, lvl-1, -1) for p in get_subgraphs(g)):
+        if all(level_bound(coxeter_matrix_from_graph(p), lvl-1, -1) for p in get_subgraphs(g)):
             yield g
 
 # **** Scripting automation functions ****
@@ -343,15 +355,6 @@ def get_all_level(start_rank_graphs, start_rank, end_rank, lvl):
         rank+=1
     tt = time.time()-tt_start
     print(f"Total time taken: {tt}!!!!")
-
-def proposition(lvl_graphs, max_nodes, lvl=2):
-    contradictions = 0
-    for g in lvl_graphs:
-        if all(is_level_0(coxeter_matrix_from_graph(child)) for child in get_subgraphs(g)):
-            contradictions += 1
-            showGraph(g, "contradiction")
-            break
-    return contradictions
 
 def better_get_all_level(prev_level_graphs, lvl, min_nodes):
     st = time.time()
@@ -392,8 +395,3 @@ def better_get_all_level(prev_level_graphs, lvl, min_nodes):
     tt = time.time()-st
     print(f"Total time taken: {tt}s !!!!")
     return seen.values()
-        
-a2 = CoxeterType(['A', 2]).coxeter_graph()
-r1 = [a2]
-r2 = get_next_rank(r1)
-r3 = get_next_rank(r2)
